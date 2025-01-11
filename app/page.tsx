@@ -1,9 +1,9 @@
-"use client"
-import { signIn } from "next-auth/react";
+import Landing from './components/Landing'
 
 export default function Home() {
-
   return (
-    <button onClick={() => signIn()}>Login with Google</button>
-  );
+    <>
+      <Landing/>  
+    </>
+  )
 }
