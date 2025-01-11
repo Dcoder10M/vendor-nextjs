@@ -20,11 +20,6 @@ const Landing = () => {
       <div className='flex space-x-6'>
         {data == null ? (
           <>
-            <Link href='/signup'>
-              <button className='px-8 py-3 bg-gray-800 text-white font-medium rounded-lg shadow-md hover:bg-gray-700 transition-all duration-300 transform hover:scale-105'>
-                Sign Up
-              </button>
-            </Link>
             <Link href='/api/auth/signin'>
               <button className='px-8 py-3 bg-blue-800 text-white font-medium rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300 transform hover:scale-105'>
                 Sign In
