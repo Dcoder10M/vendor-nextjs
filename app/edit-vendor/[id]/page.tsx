@@ -66,6 +66,7 @@ const EditVendor = () => {
         setCity(vendor.city)
         setCountry(vendor.country)
         setZipCode(vendor.zipCode)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         setError(error.message || 'An error occurred while fetching vendor details')
       } finally {
@@ -113,8 +114,8 @@ const EditVendor = () => {
       if (!response.ok) {
         throw new Error('Failed to update vendor')
       }
-
       router.push('/dashboard')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setError(error.message || 'An error occurred while updating the vendor')
     } finally {

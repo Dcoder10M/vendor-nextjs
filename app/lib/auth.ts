@@ -10,6 +10,7 @@ export const NEXT_AUTH = {
   ],
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async signIn({ user, profile }: any) {
       if (!profile || !profile.sub) {
         console.error('Missing Google profile or sub')
@@ -40,6 +41,7 @@ export const NEXT_AUTH = {
 
       return true
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async session({ session, token }: any) {
       if (session.user) {
         (session.user as { id?: string }).id = token.sub

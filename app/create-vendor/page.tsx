@@ -66,6 +66,9 @@ const CreateVendor = () => {
       }
 
       router.push('/dashboard');
+
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setError(error.message || 'An error occurred while creating the vendor');
     } finally {

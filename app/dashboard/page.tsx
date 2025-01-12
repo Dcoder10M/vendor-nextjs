@@ -47,6 +47,7 @@ const Dashboard = () => {
         const data = await response.json();
         setVendors(data.vendors);
         setTotalVendors(data.totalVendors);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         setError(err.message || 'Something went wrong');
       } finally {
@@ -69,7 +70,9 @@ const Dashboard = () => {
         if (!response.ok) {
           throw new Error('Failed to delete vendor');
         }
+         
         setVendors(vendors.filter((vendor) => vendor.id !== id));
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         alert(err.message || 'Failed to delete vendor');
       }

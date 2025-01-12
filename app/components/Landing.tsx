@@ -6,7 +6,7 @@ const Landing = () => {
     <div className='flex flex-col items-center justify-center min-h-screen'>
       <div className='text-center'>
         <h1 className='text-5xl font-extrabold mb-6'>
-          Welcome to Vendor's List
+          Welcome to Vendor&apos;s List
         </h1>
         <p className='text-xl mb-10'>
           Join our community and start sharing your story.
