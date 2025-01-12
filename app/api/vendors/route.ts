@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     })
     const totalVendors = await prisma.vendor.count()
 
-    return NextResponse.json({ vendors, totalVendors })
+    return NextResponse.json({ vendors, totalVendors },{status:200})
   } catch (error) {
     console.error(error)
     return NextResponse.json(
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     zipCode,
   } = body
 
-  if (!name || !bankAccount || !bankName || !address2) {
+  if (!name || !bankAccount || !bankName || !address1) {
     return NextResponse.json(
       { error: 'Mandatory fields missing' },
       { status: 400 }

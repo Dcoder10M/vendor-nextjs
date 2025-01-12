@@ -3,6 +3,43 @@ import { getServerSession } from 'next-auth'
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/db'
 
+// GET: Get a single vendor
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  // const session = await getServerSession(NEXT_AUTH)
+  // if (!session?.user?.id) {
+  //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  // }
+
+  try {
+    console.log('params:', params);
+
+    const resolvedParams = await params;
+    const vendorId = resolvedParams.id;
+
+    const vendor = await prisma.vendor.findFirst({
+      where: { id: vendorId },
+    });
+
+    if (!vendor) {
+      return NextResponse.json(
+        { error: 'Vendor not found or unauthorized' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(vendor, { status: 200 });
+  } catch (error) {
+    console.error('Error fetching vendor:', error);
+    return NextResponse.json(
+      { error: 'Failed to get vendor' },
+      { status: 500 }
+    );
+  }
+}
+
 // PUT: Update a vendor
 export async function PUT(
   req: NextRequest,
@@ -26,10 +63,22 @@ export async function PUT(
   } = body
 
   try {
-    const vendor = await prisma.vendor.update({
+    const vendor = await prisma.vendor.findFirst({
       where: {
         id: params.id,
+        userId: session.user.id, // Ensure the vendor belongs to the user
       },
+    })
+
+    if (!vendor) {
+      return NextResponse.json(
+        { error: 'Vendor not found or unauthorized' },
+        { status: 404 }
+      )
+    }
+
+    const updatedVendor = await prisma.vendor.update({
+      where: { id: params.id },
       data: {
         name,
         bankAccount,
@@ -42,7 +91,7 @@ export async function PUT(
       },
     })
 
-    return NextResponse.json(vendor, { status: 200 })
+    return NextResponse.json(updatedVendor, { status: 200 })
   } catch (error) {
     console.error(error)
     return NextResponse.json(
@@ -63,11 +112,25 @@ export async function DELETE(
   }
 
   try {
-    const vendor = await prisma.vendor.delete({
+    const vendor = await prisma.vendor.findFirst({
+      where: {
+        id: params.id,
+        userId: session.user.id,
+      },
+    })
+
+    if (!vendor) {
+      return NextResponse.json(
+        { error: 'Vendor not found or unauthorized' },
+        { status: 404 }
+      )
+    }
+
+    await prisma.vendor.delete({
       where: { id: params.id },
     })
 
-    return NextResponse.json({ success: true, vendor }, { status: 200 })
+    return NextResponse.json({ success: true }, { status: 200 })
   } catch (error) {
     console.error(error)
     return NextResponse.json(
