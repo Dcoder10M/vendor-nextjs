@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
+import Loading from '../Loading';
+import Link from 'next/link';
 
 interface Vendor {
   id: string;
@@ -26,7 +28,7 @@ interface SessionUser {
 const PAGE_SIZE = 10;
 
 const Dashboard = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +58,7 @@ const Dashboard = () => {
   }, [page]);
 
   const handleDelete = async (id: string) => {
-    if (!(session?.user as SessionUser).id) {
+    if (!(session?.user as SessionUser)?.id) {
       alert('You are not authorized to delete this vendor.');
       return;
     }
@@ -83,6 +85,10 @@ const Dashboard = () => {
     }
   };
 
+  if (status === 'loading') {
+    return <Loading />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-6 px-8">
       <header className="flex justify-between items-center mb-6">
@@ -90,18 +96,16 @@ const Dashboard = () => {
         <div className="flex items-center space-x-4">
           {!session?.user ? (
             <>
-              <button
-                onClick={() => (window.location.href = '/api/auth/signin')}
-                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300"
-              >
-                Sign In
-              </button>
-              <button
-                onClick={() => (window.location.href = '/')}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300"
-              >
-                Go Home
-              </button>
+              <Link href="/api/auth/signin">
+                <button className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300">
+                  Sign In
+                </button>
+              </Link>
+              <Link href="/">
+                <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300">
+                  Go Home
+                </button>
+              </Link>
             </>
           ) : (
             <>
@@ -111,19 +115,18 @@ const Dashboard = () => {
               >
                 Logout
               </button>
-              <button
-                onClick={() => window.location.href = '/create-vendor'}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300"
-              >
-                Add Vendor
-              </button>
+              <Link href="/create-vendor">
+                <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300">
+                  Add Vendor
+                </button>
+              </Link>
             </>
           )}
         </div>
       </header>
 
       {loading ? (
-        <p className="text-center text-gray-500">Loading...</p>
+        <Loading />
       ) : error ? (
         <p className="text-center text-red-500">{error}</p>
       ) : (
@@ -146,12 +149,9 @@ const Dashboard = () => {
                   <td className="px-4 py-3 text-center">
                     {vendor.userId === (session?.user as SessionUser)?.id && (
                       <>
-                        <button
-                          onClick={() => (window.location.href = `/edit-vendor/${vendor.id}`)}
-                          className="mr-2 text-blue-500 hover:text-blue-700"
-                        >
-                          Edit
-                        </button>
+                        <Link href={`/edit-vendor/${vendor.id}`}>
+                          <button className="mr-2 text-blue-500 hover:text-blue-700">Edit</button>
+                        </Link>
                         <button
                           onClick={() => handleDelete(vendor.id)}
                           className="text-red-500 hover:text-red-700"
@@ -170,14 +170,14 @@ const Dashboard = () => {
             <button
               onClick={() => handlePagination('prev')}
               disabled={page === 0}
-              className="px-4 py-2 bg-gray-400 text-white rounded-lg disabled:opacity-50"
+              className="px-4 py-2 bg-gray-600 text-white rounded-lg disabled:opacity-50"
             >
               Previous
             </button>
             <button
               onClick={() => handlePagination('next')}
               disabled={(page + 1) * PAGE_SIZE >= totalVendors}
-              className="px-4 py-2 bg-gray-400 text-white rounded-lg disabled:opacity-50"
+              className="px-4 py-2 bg-gray-600 text-white rounded-lg disabled:opacity-50"
             >
               Next
             </button>

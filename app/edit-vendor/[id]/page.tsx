@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import Loading from '@/app/Loading'
 
 interface SessionUser {
   id: string
@@ -13,10 +14,10 @@ interface SessionUser {
 
 const EditVendor = () => {
   const router = useRouter()
-  const { data: session, status } = useSession();
+  const { data: session, status } = useSession()
   const params = useParams()
   const vendorId = params.id
-  const userId = (session?.user as SessionUser)?.id;
+  const userId = (session?.user as SessionUser)?.id
 
   const [name, setName] = useState<string>('')
   const [bankAccount, setBankAccount] = useState<string>('')
@@ -31,22 +32,24 @@ const EditVendor = () => {
 
   useEffect(() => {
     const fetchVendor = async () => {
-      if(status==='loading'){
+      if (status === 'loading') {
         return
       }
-      if(status==='unauthenticated'){
+      if (status === 'unauthenticated') {
         router.push('/')
+        return
       }
       if (status !== 'authenticated' || !userId) {
         setError('You must be logged in to edit this vendor.')
         return
       }
       if (!vendorId) {
-        setError('You must be logged in to edit this vendor.')
+        setError('Vendor ID is missing.')
         return
       }
 
       try {
+        setLoading(true)
         const response = await fetch(`/api/vendors/${vendorId}`)
 
         if (!response.ok) {
@@ -54,9 +57,6 @@ const EditVendor = () => {
         }
 
         const vendor = await response.json()
-
-        console.log("vendorsssss", vendor)
-        console.log(vendor.name)
 
         setName(vendor.name)
         setBankAccount(vendor.bankAccount)
@@ -67,14 +67,14 @@ const EditVendor = () => {
         setCountry(vendor.country)
         setZipCode(vendor.zipCode)
       } catch (error: any) {
-        setError(
-          error.message || 'An error occurred while fetching vendor details'
-        )
+        setError(error.message || 'An error occurred while fetching vendor details')
+      } finally {
+        setLoading(false)
       }
     }
 
     fetchVendor()
-  }, [status, session, vendorId])
+  }, [status, session, vendorId, userId, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -84,12 +84,7 @@ const EditVendor = () => {
       return
     }
 
-    if (
-      !name ||
-      !bankAccount ||
-      !bankName ||
-      !address1
-    ) {
+    if (!name || !bankAccount || !bankName || !address1) {
       setError('Please fill in all required fields.')
       return
     }
@@ -127,6 +122,13 @@ const EditVendor = () => {
     }
   }
 
+  if (status === 'loading' || loading) {
+    return (
+      <div className='flex justify-center items-center h-screen'>
+        <Loading />
+      </div>
+    )
+  }
   return (
     <div className='min-h-screen bg-gray-50 py-6 px-8'>
       <header className='flex justify-between items-center mb-6 text-gray-800'>

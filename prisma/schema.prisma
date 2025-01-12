@@ -15,7 +15,7 @@ datasource db {
 
 model User {
   id      String   @id
-  name    String?
+  name    String
   email   String   @unique
   image   String?
   vendors Vendor[]
@@ -28,9 +28,9 @@ model Vendor {
   bankName    String
   address1    String
   address2    String?
-  city        String
-  country     String
-  zipCode     String
+  city        String?
+  country     String?
+  zipCode     String?
   userId      String
   user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

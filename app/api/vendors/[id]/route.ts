@@ -8,10 +8,10 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  // const session = await getServerSession(NEXT_AUTH)
-  // if (!session?.user?.id) {
-  //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  // }
+  const session = await getServerSession(NEXT_AUTH)
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
 
   try {
     console.log('params:', params);
@@ -66,7 +66,7 @@ export async function PUT(
     const vendor = await prisma.vendor.findFirst({
       where: {
         id: params.id,
-        userId: session.user.id, // Ensure the vendor belongs to the user
+        userId: session.user.id,
       },
     })
 
